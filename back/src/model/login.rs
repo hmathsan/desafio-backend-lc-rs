@@ -8,7 +8,7 @@ pub struct LoginRequest {
     pub senha: String
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug)]
 pub struct LoginResponse {
     token: String,
     expires_in: String

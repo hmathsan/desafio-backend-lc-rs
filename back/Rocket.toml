@@ -1,4 +1,4 @@
 [default]
 port = 5000
 secret_key = "Q]o-($vNy~Bhxnf4M;tnG#BA@a%9K8"
-log_level = "off"
+log_level = "debug"
