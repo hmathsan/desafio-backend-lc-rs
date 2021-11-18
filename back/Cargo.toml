@@ -7,10 +7,12 @@ edition = "2021"
 
 [dependencies]
 rocket = {version = "^0.5.0-rc.1", features = [ "json" ]}
-jsonwebtoken = "7.2.0"
-dotenv = "0.15.0"
-dotenv_codegen = "0.15.0"
-tokio = "1.14.0"
-serde = "1.0.130"
-serde_json = "1.0.71"
-chrono = "0.4.19"
+jsonwebtoken = "^7.2.0"
+dotenv = "^0.15.0"
+dotenv_codegen = "^0.15.0"
+tokio = "^1.14.0"
+serde = "^1.0.130"
+serde_json = "^1.0.71"
+chrono = "^0.4.19"
+uuid = {version = "^0.8.2", features = [ "v4" ]}
+tokio-postgres = "0.7.5"

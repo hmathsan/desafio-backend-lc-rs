@@ -1,14 +1,7 @@
-use serde::Serialize;
-
 #[derive(Debug)]
 pub enum ApiErrors {
-    Validation(ValidationError),
+    Validation(String),
     Unauthorized,
     Forbidden,
     Unknown(String),
-}
-
-#[derive(Serialize, Debug)]
-pub struct ValidationError {
-    pub message: String,
 }

@@ -1,6 +1,6 @@
 use rocket::{data::{Data, ToByteUnit, FromData, Outcome}, http::Status, request::Request, tokio::io::AsyncReadExt};
 
-use crate::model::{errors::{ApiErrors, ValidationError}, login::LoginRequest};
+use crate::model::{errors::{ApiErrors}, login::LoginRequest};
 
 const DEFAULT_LOGIN: &str = dotenv!("DEFAULT_LOGIN");
 const DEFAULT_SENHA: &str = dotenv!("DEFAULT_SENHA");
@@ -24,8 +24,7 @@ impl<'r> FromData<'r> for LoginRequest {
                     }
                 },
                 Err(e) => {
-                    println!("{:?}", e);
-                    return Outcome::Failure((Status::InternalServerError, ApiErrors::Validation(ValidationError{message: format!("{}", e)})))
+                    return Outcome::Failure((Status::InternalServerError, ApiErrors::Validation(format!("{}", e))))
                 },
             }
         }

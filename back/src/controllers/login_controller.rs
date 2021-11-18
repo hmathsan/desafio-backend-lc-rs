@@ -4,7 +4,6 @@ use rocket::http::Status;
 use chrono::{DateTime, TimeZone, Utc};
 use jsonwebtoken::{encode, Header, EncodingKey};
 
-
 use crate::{model::{api_response::ApiResponse, errors::ApiErrors, login::{LoginRequest, LoginResponse, User}}, services::error_handler::error_handler};
 
 const SECRET: &str = dotenv!("JWT_SECRET");
@@ -27,8 +26,6 @@ pub async fn login(login_req: Result<LoginRequest, ApiErrors>) -> ApiResponse {
                     token.to_string(), time_to_expire.format("%d/%m/%Y %T %Z").to_string()
                 ), Status::Ok)
         },
-        Err(e) => {
-            return error_handler(e);
-        },
+        Err(e) => return error_handler(e),
     }
 }
