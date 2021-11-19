@@ -7,7 +7,7 @@ mod model;
 mod repositories;
 
 use crate::{
-    controllers::{login_controller::login, cards_controller::get_all_cards},
+    controllers::{login_controller::login, cards_controller::{get_all_cards, create_new_card}},
     repositories::RepositoryFairing
 };
 
@@ -16,5 +16,5 @@ fn rocket() -> _ {
     rocket::build()
         .attach(RepositoryFairing)
         .mount("/login", routes![login])
-        .mount("/cards", routes![get_all_cards])
+        .mount("/cards", routes![get_all_cards, create_new_card])
 }

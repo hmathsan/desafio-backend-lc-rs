@@ -1,12 +1,19 @@
-use rocket::serde::{Serialize};
+use rocket::serde::{Serialize, Deserialize};
 use uuid::Uuid;
 
 #[derive(Debug, Serialize)]
 pub struct Card {
-    id: String,
-    titulo: String,
-    conteudo: String,
-    lista: String
+    pub id: String,
+    pub titulo: String,
+    pub conteudo: String,
+    pub lista: String
+}
+
+#[derive(Debug, Deserialize)]
+pub struct CardRequest {
+    pub titulo: String,
+    pub conteudo: String,
+    pub lista: String
 }
 
 impl Card {

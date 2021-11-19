@@ -12,7 +12,7 @@ impl<'r> FromData<'r> for LoginRequest {
     async fn from_data(_req: &'r Request<'_>, data: Data<'r>) -> Outcome<'r, Self, Self::Error> {
         let mut body = String::new();
         if let Err(e) = data.open(1.mebibytes()).read_to_string(&mut body).await {
-            Outcome::Failure((Status::InternalServerError, ApiErrors::Unknown(format!("{:?}", e))))
+            Outcome::Failure((Status::InternalServerError, ApiErrors::Unknown(format!("An unknown error ocurred while converting body data: {:?}", e))))
         } else {
             match serde_json::from_str(&body[..]) {
                 Ok(b) => {
@@ -23,9 +23,7 @@ impl<'r> FromData<'r> for LoginRequest {
                         return Outcome::Failure((Status::Forbidden, ApiErrors::Forbidden))
                     }
                 },
-                Err(e) => {
-                    return Outcome::Failure((Status::InternalServerError, ApiErrors::Validation(format!("{}", e))))
-                },
+                Err(e) => Outcome::Failure((Status::InternalServerError, ApiErrors::Validation(format!("{}", e)))),
             }
         }
     }

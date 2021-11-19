@@ -1,4 +1,4 @@
-use crate::model::cards::Card;
+use crate::model::cards::{Card, CardRequest};
 
 use super::get_conn;
 
@@ -18,4 +18,24 @@ pub async fn find_all_cards() -> Vec<Card> {
     }
 
     cards
+}
+
+pub async fn crete_new_card(new_card: Card) -> Option<Card> {
+    let (client, conn) = get_conn().await.unwrap();
+
+    tokio::spawn(async move {
+        if let Err(e) = conn.await {
+            eprintln!("{}", e);
+        }
+    });
+
+    match client.query("INSERT INTO card 
+        (id, titulo, conteudo, lista) 
+        VALUES ($1, $2, $3, $4);",
+    &[&new_card.id, &new_card.titulo, &new_card.conteudo, &new_card.lista]).await {
+        Ok(_) => Some(new_card),
+        Err(_) => None,
+    }
+
+
 }
