@@ -1,4 +1,4 @@
-use crate::model::cards::{Card, CardRequest};
+use crate::model::cards::Card;
 
 use super::get_conn;
 
@@ -20,7 +20,7 @@ pub async fn find_all_cards() -> Vec<Card> {
     cards
 }
 
-pub async fn crete_new_card(new_card: Card) -> Option<Card> {
+pub async fn create_new_card(new_card: Card) -> Option<Card> {
     let (client, conn) = get_conn().await.unwrap();
 
     tokio::spawn(async move {
@@ -36,6 +36,27 @@ pub async fn crete_new_card(new_card: Card) -> Option<Card> {
         Ok(_) => Some(new_card),
         Err(_) => None,
     }
+}
 
+pub async fn update_card(card: Card) -> Result<Option<Card>, String> {
+    let (client, conn) = get_conn().await.unwrap();
 
+    tokio::spawn(async move {
+        if let Err(e) = conn.await {
+            eprintln!("{}", e);
+        }
+    });
+
+    if &client.query("SELECT * FROM card WHERE id = $1", &[&card.id]).await.unwrap().len() <= &0 {
+        return Err(format!("Card id {} doesn't exist.", &card.id))
+    }
+
+    match client.query("UPDATE card
+        SET lista = $1, conteudo = $2, titulo = $3
+        WHERE id = $4",
+        &[&card.lista, &card.conteudo, &card.titulo, &card.id]).await {
+
+        Ok(_) => Ok(Some(card)),
+        Err(_) => Ok(None)
+    }
 }
