@@ -1,6 +1,10 @@
 use rocket::http::Status;
 
-use crate::{model::{api_response::ApiResponse, cards::{Card, CardRequest}, errors::ApiErrors}, repositories::cards_repository::{create_new_card, find_all_cards, update_card}, services::{error_handler::error_handler, guards::auth_guard::AuthValidation}};
+use crate::{
+    repositories::cards_repository::{create_new_card, find_all_cards, update_card, delete_card_by_id}, 
+    model::{api_response::ApiResponse, cards::{Card, CardRequest}, errors::ApiErrors}, 
+    services::{error_handler::error_handler, guards::auth_guard::AuthValidation}
+};
 
 #[get("/")]
 pub async fn get_all_cards(auth: Result<AuthValidation, ApiErrors>) -> ApiResponse {
@@ -21,9 +25,7 @@ pub async fn post_create_new_card(auth: Result<AuthValidation, ApiErrors>, body:
                 Ok(card_body) => {
                     match create_new_card(Card::new(card_body.titulo, card_body.conteudo, card_body.lista)).await {
                         Some(card) => ApiResponse::new(card, Status::Created),
-                        None => ApiResponse::new(
-                            "An error ocurred while saving the card to database.", 
-                            Status::InternalServerError)
+                        None => error_handler(ApiErrors::Unknown(format!("An error ocurred while saving the card to database.")))
                     }
                 },
                 Err(e) => error_handler(e),
@@ -44,13 +46,29 @@ pub async fn put_update_card(auth: Result<AuthValidation, ApiErrors>, card_id: S
                         Ok(card) => {
                             match card {
                                 Some(card) => ApiResponse::new(card, Status::Ok),
-                                None => ApiResponse::new(
-                                    "An error ocurred while saving the card to database.", 
-                                    Status::InternalServerError
-                                )
+                                None => error_handler(ApiErrors::Unknown(format!("An error ocurred while saving the card to database.")))
                             }
                         },
-                        Err(e) => ApiResponse::new(e, Status::BadRequest)
+                        Err(e) => error_handler(e)
+                    }
+                },
+                Err(e) => error_handler(e)
+            }
+        },
+        Err(e) => error_handler(e)
+    }
+}
+
+#[delete("/<card_id>")]
+pub async fn delete_card(auth: Result<AuthValidation, ApiErrors>, card_id: String) -> ApiResponse {
+    match auth {
+        Ok(_) => {
+            if card_id.is_empty() { return ApiResponse::new("Card ID must not be empty", Status::BadRequest) }
+            match delete_card_by_id(card_id).await {
+                Ok(cards) => {
+                    match cards {
+                        Some(cards) => ApiResponse::new(cards, Status::Ok),
+                        None => error_handler(ApiErrors::Unknown(format!("An error ocurred while saving the card to database.")))
                     }
                 },
                 Err(e) => error_handler(e)
